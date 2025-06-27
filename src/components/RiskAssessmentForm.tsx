@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 const AI_TOOLS = [
   'ChatGPT/OpenAI',
@@ -44,36 +45,53 @@ const RiskAssessmentForm = () => {
     email: '',
     reportRequested: false
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
     
-    // Simulate form submission
-    const submissionData = {
-      ...formData,
-      timestamp: new Date().toISOString(),
-      id: Math.random().toString(36).substr(2, 9)
-    };
+    try {
+      // Insert data into Supabase
+      const { error } = await supabase
+        .from('risk_assessments')
+        .insert([{
+          ai_tool: formData.aiTool,
+          risk_type: formData.riskType,
+          severity: formData.severity,
+          description: formData.description,
+          email: formData.email,
+          report_requested: formData.reportRequested
+        }]);
 
-    // Store in localStorage to simulate database
-    const existingData = JSON.parse(localStorage.getItem('riskAssessments') || '[]');
-    existingData.push(submissionData);
-    localStorage.setItem('riskAssessments', JSON.stringify(existingData));
+      if (error) throw error;
 
-    toast({
-      title: "Risk Assessment Submitted",
-      description: formData.reportRequested ? "Your report will be sent to your email within 24 hours." : "Thank you for your submission!",
-    });
+      toast({
+        title: "Risk Assessment Submitted",
+        description: formData.reportRequested 
+          ? "Your report will be sent to your email within 24 hours." 
+          : "Thank you for your submission!",
+      });
 
-    // Reset form
-    setFormData({
-      aiTool: '',
-      riskType: '',
-      severity: '',
-      description: '',
-      email: '',
-      reportRequested: false
-    });
+      // Reset form
+      setFormData({
+        aiTool: '',
+        riskType: '',
+        severity: '',
+        description: '',
+        email: '',
+        reportRequested: false
+      });
+    } catch (error) {
+      console.error('Error submitting assessment:', error);
+      toast({
+        title: "Submission Error",
+        description: "There was an error submitting your assessment. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -165,9 +183,9 @@ const RiskAssessmentForm = () => {
           <Button 
             type="submit" 
             className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-            disabled={!formData.aiTool || !formData.riskType || !formData.severity}
+            disabled={!formData.aiTool || !formData.riskType || !formData.severity || isSubmitting}
           >
-            Submit Risk Assessment
+            {isSubmitting ? 'Submitting...' : 'Submit Risk Assessment'}
           </Button>
         </form>
       </CardContent>

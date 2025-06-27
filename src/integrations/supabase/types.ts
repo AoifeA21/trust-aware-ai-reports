@@ -9,7 +9,105 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      mitigation_strategies: {
+        Row: {
+          created_at: string
+          effectiveness_score: number | null
+          id: string
+          implementation_difficulty: string | null
+          risk_type: string
+          severity: string
+          strategy_description: string
+          strategy_title: string
+        }
+        Insert: {
+          created_at?: string
+          effectiveness_score?: number | null
+          id?: string
+          implementation_difficulty?: string | null
+          risk_type: string
+          severity: string
+          strategy_description: string
+          strategy_title: string
+        }
+        Update: {
+          created_at?: string
+          effectiveness_score?: number | null
+          id?: string
+          implementation_difficulty?: string | null
+          risk_type?: string
+          severity?: string
+          strategy_description?: string
+          strategy_title?: string
+        }
+        Relationships: []
+      }
+      risk_assessments: {
+        Row: {
+          ai_tool: string
+          created_at: string
+          description: string | null
+          email: string | null
+          id: string
+          report_requested: boolean | null
+          risk_type: string
+          severity: string
+          updated_at: string
+        }
+        Insert: {
+          ai_tool: string
+          created_at?: string
+          description?: string | null
+          email?: string | null
+          id?: string
+          report_requested?: boolean | null
+          risk_type: string
+          severity: string
+          updated_at?: string
+        }
+        Update: {
+          ai_tool?: string
+          created_at?: string
+          description?: string | null
+          email?: string | null
+          id?: string
+          report_requested?: boolean | null
+          risk_type?: string
+          severity?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      risk_factors: {
+        Row: {
+          created_at: string
+          description: string | null
+          factor_name: string
+          frequency_percentage: number | null
+          id: string
+          impact_level: string | null
+          risk_type: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          factor_name: string
+          frequency_percentage?: number | null
+          id?: string
+          impact_level?: string | null
+          risk_type: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          factor_name?: string
+          frequency_percentage?: number | null
+          id?: string
+          impact_level?: string | null
+          risk_type?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
